@@ -25,11 +25,12 @@ public class fileClass {
 
 		Scanner in = null;
 		getFile();
-		try {
-			in = new Scanner(file);	
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		while(in==null) {
+			try {
+			    in = new Scanner(file);
+			} catch (FileNotFoundException e) {
+			    e.printStackTrace();
+			}
 		int numEquip=in.nextInt();
 		for(int i=0;i<numEquip;i++) {
 			String equipName =in.next();
@@ -45,12 +46,30 @@ public class fileClass {
 			patientClass pc = new patientClass(patientTime, patientEquip);
 			patients.add(pc);
 		}
-				
+		}	
 	}
 
 	public void time(int numDocs, ArrayList<patientClass> patients) {
+		doctorClass[] docs = new doctorClass[numDocs];
 		doctorClass dc = new doctorClass(patients, equipment);
+		
+		for(int i=0;i<numDocs;i++) {
+			docs[i] = new doctorClass(patients, equipment);
+			
+		}
+		
 		long startTime = System.currentTimeMillis();
+
+		for(doctorClass i:docs) {
+			i.start();
+		}
+		for(int i=0;i<numDocs;i++) {
+			try {
+				dc.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		
 		dc.run();
@@ -59,17 +78,22 @@ public class fileClass {
 	
 		long endTime = System.currentTimeMillis();
 		long elapsed = endTime - startTime;
-		System.out.print("Number of doctors: "+ numDocs);
-		System.out.print("Time: "+ elapsed );
+		System.out.println(patients.size());
+		System.out.println("Number of doctors: "+ numDocs);
+		System.out.println("Time: "+ elapsed + " ms" );
+		System.out.println();
 	
 	}
 	public void lastMethodOfTheYear() {
 		ArrayList<patientClass> patientsCopy1 = new ArrayList<>(patients);
 		time(1,patientsCopy1);
+		
 		ArrayList<patientClass> patientsCopy2 = new ArrayList<>(patients);
 		time(2,patientsCopy2);
+		
 		ArrayList<patientClass> patientsCopy3 = new ArrayList<>(patients);
 		time(4,patientsCopy3);
+		
 		ArrayList<patientClass> patientsCopy4 = new ArrayList<>(patients);
 		time(8,patientsCopy4);
 
